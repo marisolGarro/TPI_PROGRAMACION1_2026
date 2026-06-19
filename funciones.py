@@ -103,9 +103,55 @@ def agregar_pais():
         superficie=verificar_numero("Ingrese el valor de la superficie: ")
         continente=verificar_texto("Ingrese el continenete: ")
         archivo.write(f"{nombre},{poblacion},{superficie},{continente}\n")
+        print("País agregado con éxito")
+
+def actualizar():
+    opcion= questionary.select(
+        message="Selecciona: ",
+        choices=["1. Actualizar población",
+"2. Actualizar superficie"]
+    ).ask()
+    pais_buscado=verificar_texto("Ingrese el país que desea actualizar: ")
+    with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        lector=csv.DictReader(archivo)
+        campos=lector.fieldnames
+        filas=[]
+        encontrado=False
+        match (opcion):
+            case "1. Actualizar población":
+                for linea in lector:
+                    if normalizar(pais_buscado)==normalizar(linea["nombre"]):
+                        poblacion_nueva=verificar_numero("Ingrese el valor de la poblacion: ")
+                        linea["poblacion"]=poblacion_nueva
+                        encontrado=True
+                    filas.append(linea)
+                if encontrado:
+                    with open("paises.csv","w",newline="",encoding="utf-8-sig") as archivo:
+                        escritor=csv.DictWriter(archivo,fieldnames=campos)
+                        escritor.writeheader()
+                        escritor.writerows(filas)
+                        print("Pais actualizado con éxito")
+                else:
+                    raise ValueError("El país ingresado no se encuentra en el registro")
+            case "2. Actualizar superficie":
+                for linea in lector:
+                    if normalizar(pais_buscado)==normalizar(linea["nombre"]):
+                        superficie_nueva=verificar_numero("Ingrese el valor de la superficie: ")
+                        linea["superficie"]=superficie_nueva
+                        encontrado=True
+                    filas.append(linea)
+                if encontrado:
+                    with open("paises.csv","w",newline="",encoding="utf-8-sig") as archivo:
+                        escritor=csv.DictWriter(archivo,fieldnames=campos)
+                        escritor.writeheader()
+                        escritor.writerows(filas)
+                        print("Pais actualizado con éxito")
+                else:
+                    raise ValueError("El país ingresado no se encuentra en el registro")
+
 
 def buscar_pais():
-    pais_buscado=normalizar(input("Ingrese el país que desea buscar: ")).strip()
+    pais_buscado=verificar_texto("Ingrese el país que desea buscar: ")
     
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         #Cada fila la representa como un diccionario
@@ -113,7 +159,7 @@ def buscar_pais():
         encontrado=False
         for fila in lector:
             #Verifica si el pais empieza por los caracteres ingresados
-            if (normalizar(fila["nombre"])).startswith(pais_buscado):
+            if (normalizar(fila["nombre"])).startswith(normalizar(pais_buscado)):
                 print(f"\nPais: {fila["nombre"]}")
                 print(f"Población: {fila["poblacion"]}")
                 print(f"Superficie: {fila["superficie"]} km²")

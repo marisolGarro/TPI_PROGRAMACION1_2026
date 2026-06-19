@@ -10,6 +10,7 @@ while True:
                 input("\nPresione enter para continuar")
                 limpiar_consola()
             case "2. Actualizar población y superficie":
+                actualizar()
                 input("\nPresione enter para continuar")
                 limpiar_consola()
             case "3. Buscar país":

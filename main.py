@@ -54,7 +54,7 @@ while True:
                         case "1. País con mayor y menor población":
                             pais_moyor_menor_pablacion()
                         case "2. Promedio de población":
-                            pass
+                            promedio_poblacion()
                         case "3. Promedio de superficie":
                             pass
                         case "4. Cantidad de países por continente":

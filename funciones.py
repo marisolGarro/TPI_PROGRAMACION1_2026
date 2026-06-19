@@ -329,3 +329,12 @@ def pais_moyor_menor_pablacion():
         menor_poblacion=min(paises,key=lambda pais:pais["nombre"])
         print(f"El país con menor población es {menor_poblacion["nombre"]}")
 
+def promedio_poblacion():
+    with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        lector=csv.DictReader(archivo)
+        paises=list(lector)
+        suma=0
+        for pais in paises:
+            suma+=int(pais["poblacion"])
+        promedio=suma/len(paises)
+        print(f"El promedio de la población es {promedio}")

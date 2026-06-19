@@ -54,7 +54,7 @@ def estadistica_menu():
         choices= ["1. País con mayor y menor población",
 "2. Promedio de población",
 "3. Promedio de superficie",
-"4. Cantidad de países por continente"
+"4. Cantidad de países por continente",
 "5. Salir"]
 ).ask()
     return opcion
@@ -158,7 +158,7 @@ def buscar_pais():
         lector=csv.DictReader(archivo)
         encontrado=False
         for fila in lector:
-            #Verifica si el pais empieza por los caracteres ingresados
+            # Starswith verifica si el pais empieza por los caracteres ingresados y tambien tomo la palabra completa
             if (normalizar(fila["nombre"])).startswith(normalizar(pais_buscado)):
                 print(f"\nPais: {fila["nombre"]}")
                 print(f"Población: {fila["poblacion"]}")
@@ -319,3 +319,13 @@ def ordenar_por_superficie():
                     print("-"*30)
             case _:
                 print("La opción ingresada es incorrecta")
+
+def pais_moyor_menor_pablacion():
+    with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        lector=csv.DictReader(archivo)
+        paises=list(lector)
+        mayor_poblacion=max(paises,key=lambda pais:pais["nombre"])
+        print(f"El país con mayor población es {mayor_poblacion["nombre"]}")
+        menor_poblacion=min(paises,key=lambda pais:pais["nombre"])
+        print(f"El país con menor población es {menor_poblacion["nombre"]}")
+

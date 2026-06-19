@@ -52,7 +52,7 @@ while True:
                     opcion=estadistica_menu()
                     match (opcion):
                         case "1. País con mayor y menor población":
-                            pass
+                            pais_moyor_menor_pablacion()
                         case "2. Promedio de población":
                             pass
                         case "3. Promedio de superficie":

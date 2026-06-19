@@ -1,6 +1,5 @@
 import csv
 import os
-from funciones import*
 import unicodedata
 import questionary
 
@@ -58,6 +57,7 @@ def estadistica_menu():
 "5. Salir"]
 ).ask()
     return opcion
+#Menú de continentes y por medio de un diccionario busco la clave y obtengo el contienete como un string
 def menu_continentes():
     opcion= questionary.select(
         message="Selecciona el continente: ",
@@ -89,7 +89,7 @@ def normalizar(texto):
         #Acá se analiza cada tipo de caracter y si es una tilde no lo guarda
         if unicodedata.category(c) != 'Mn'
     ).lower() #convierto todo a minúscula
-
+#verifico que sea un número y que no sea negativo
 def verificar_numero(mensaje):
     while True:
         try:
@@ -98,6 +98,7 @@ def verificar_numero(mensaje):
                 raise ValueError("El valor ingresado no puede ser negativo")
             return num
         except ValueError as e:
+            #utilice este if porque quiero un mensaje personalizado para los distintos ValueError y no el que sale por defecto
             if "invalid literal" in str(e):
                 print("El valor ingresado es incorrecto")
             else:
@@ -112,7 +113,7 @@ def verificar_texto(mensaje):
             return texto
         except ValueError as e:
             print(f"Error: {e}")
-        
+#función para agregar paises abro en archivo en modo "a" para agregar al final el nuevo pais en paises.csv     
 def agregar_pais():
     with open("paises.csv","a",newline="",encoding="utf-8-sig") as archivo:
         nombre=verificar_texto("Ingrese el nombre del país: ")
@@ -128,6 +129,7 @@ def actualizar():
         choices=["1. Actualizar población",
 "2. Actualizar superficie"]
     ).ask()
+    #abro el archivo en modo lectura "r" guardo los campos y los paises que contiene el archivo en una lista
     pais_buscado=verificar_texto("Ingrese el país que desea actualizar: ")
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
@@ -137,12 +139,18 @@ def actualizar():
         match (opcion):
             case "1. Actualizar población":
                 for linea in lector:
+                    #busco si el pais buscado exite en el archivo y si es asi le paso el nuevo valor
+                    #de la población y lo guardo en la lista filas
                     if normalizar(pais_buscado)==normalizar(linea["nombre"]):
                         poblacion_nueva=verificar_numero("Ingrese el valor de la poblacion: ")
                         linea["poblacion"]=poblacion_nueva
                         encontrado=True
                     filas.append(linea)
                 if encontrado:
+                    #como se encontro el pais y se modificó, vuelvo a abrir el archivo csv en modo escritura
+                    #para pasarle la modificacion pero como estoy reescribiendo le paso todas las filas con
+                    #la lista filas y los fielnames guardados en la varible campos y me queda el archivo con todos
+                    #los paises que existían junto con el país modificado
                     with open("paises.csv","w",newline="",encoding="utf-8-sig") as archivo:
                         escritor=csv.DictWriter(archivo,fieldnames=campos)
                         escritor.writeheader()
@@ -184,11 +192,13 @@ def buscar_pais():
                 print("-"*30)
                 encontrado=True
         if not encontrado:
-            raise ValueError("El país ingresado no existe en el registro")
-    
+            raise ValueError("El país ingresado no existe en el registro")   
 def filtrar_pais_continente():
+    #llamo a la función que muesta el menu de los continentes y me devuelve el continente seleccionado
     continente_elegido = menu_continentes()
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        #interpreta cada fila del CSV como un diccionario
+        # utilizando los nombres de las columnas como claves
         lector=csv.DictReader(archivo)
         encontrado=False
         for fila in lector:
@@ -203,16 +213,17 @@ def filtrar_pais_continente():
             
 
 def filtrar_por_población():
+    #Llamo a la función verificar número y me devuelve un número
     poblacion_menor=verificar_numero("Ingrese el rango inferior: ")
     poblacion_sup=verificar_numero("Ingrese el rango superior: ")
-    if poblacion_menor<0 or poblacion_sup<0:
-        raise ValueError("El valor de la población no puede ser negativo")
+    #verifico que los rangos sean correctos, osea que el rango menor no sea mayo que el rango superior
     if poblacion_menor>poblacion_sup:
         raise ValueError("El rango inferior no puede ser mayor al rango superior")
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
         encontrado=False
         for fila in lector:
+            #busco las poblaciones que esten entre los rangos solicitados e imprimo sus datos
             if poblacion_menor<int(fila["poblacion"])<poblacion_sup:
                 print(f"\nPais: {fila["nombre"]}")
                 print(f"Población: {fila["poblacion"]}")
@@ -226,14 +237,14 @@ def filtrar_por_población():
 def filtrar_por_superficie():
     superficie_menor=verificar_numero("Ingrese el rango inferior: ")
     superficie_sup=verificar_numero("Ingrese el rango superior: ")
-    if superficie_menor<0 or superficie_sup<0:
-        raise ValueError("El valor de la superficie no puede ser negativo")
+    #verifico que los rangos estén bien. que el rango inferior no sea mayor al rango superior
     if superficie_menor>superficie_sup:
         raise ValueError("El rango inferior no puede ser mayor al rango superior")
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
         encontrado=False
         for fila in lector:
+            #busco las superficies que esten entre los rangos solicitados
             if superficie_menor<int(fila["superficie"])<superficie_sup:
                 print(f"\nPais: {fila["nombre"]}")
                 print(f"Población: {fila["poblacion"]}")
@@ -251,10 +262,13 @@ def ordenar_por_pais():
 "2. Ordenar nombres de paises de Z -> A"]
     ).ask()
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        #convierte el csv en un diccionario utilizando las columnas como claves
         lector=csv.DictReader(archivo)
+        #convierte al lector en una lista para posteriormente ordenar los paises
         paises=list(lector)
         match opcion:
             case "1. Ordenar nombres de paises de A -> Z":
+                #ordena la lista de manera ascendente comparando los nombres
                 paises_ordenados = sorted(paises, key=lambda pais: normalizar(pais["nombre"]))
                 for pais in paises_ordenados:
                     print(f"\nPais: {pais["nombre"]}")
@@ -263,6 +277,7 @@ def ordenar_por_pais():
                     print(f"Contienente: {pais["continente"]}\n")
                     print("-"*30)
             case "2. Ordenar nombres de paises de Z -> A":
+                #reverse=True invierte el orden para poder obtener un orden de Z->A
                 paises_ordenados = sorted(paises, key=lambda pais: normalizar(pais["nombre"]),reverse=True)
                 for pais in paises_ordenados:
                     print(f"\nPais: {pais["nombre"]}")
@@ -270,9 +285,8 @@ def ordenar_por_pais():
                     print(f"Superficie: {pais["superficie"]} km²")
                     print(f"Contienente: {pais["continente"]}\n")
                     print("-"*30)
-            case _:
-                print("La opción ingresada es incorrecta")
-
+#Hago lo mismo que en la función ordenar_por_pais() nada mas que tranformo el dato a un
+#int porque cuando me devuelve los valores directos del archivo csv me los trae como string
 def ordenar_por_poblacion():
     opcion= questionary.select(
         message="Selecciona: ",
@@ -326,22 +340,27 @@ def ordenar_por_superficie():
 def pais_moyor_menor_pablacion():
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
+        #convierte al lector en una lista para poder utilizar max y min
         paises=list(lector)
-        mayor_poblacion=max(paises,key=lambda pais:pais["nombre"])
+        #busco el país con mayor poblacion comparando los valores de la columna población 
+        mayor_poblacion=max(paises,key=lambda pais:int(pais["poblacion"]))
         print(f"El país con mayor población es {mayor_poblacion["nombre"]}")
-        menor_poblacion=min(paises,key=lambda pais:pais["nombre"])
+        menor_poblacion=min(paises,key=lambda pais:int(pais["poblacion"]))
         print(f"El país con menor población es {menor_poblacion["nombre"]}\n")
 
 def promedio_poblacion():
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
+        #tranformo el lector en lista para utilizar len
         paises=list(lector)
         suma=0
+        #recorro cada pais en el lista y busco los valores de sus poblaciones y las sumo
         for pais in paises:
             suma+=int(pais["poblacion"])
+        #hago el promedio en base a la suma obtenida de las poblaciones y la cantidad de países
         promedio=suma/len(paises)
         print(f"El promedio de la población es {promedio}\n")
-
+#hago lo mismo que en promedio_población pero con los valores de la columna superficie
 def promedio_superficie():
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
@@ -355,24 +374,10 @@ def promedio_superficie():
 def cantidad_por_continente():
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
-        africa=0
-        america=0
-        asia=0
-        europa=0
-        oceania=0
+        #genero una diccionario y le asigno el valor 0 a cada continente
+        contador_continentes={"África":0,"América":0,"Asia":0,"Europa":0,"Oceanía":0}
         for pais in lector:
-            if pais["continente"]=="África":
-                africa+=1
-            elif pais["continente"]=="América":
-                america+=1
-            elif pais["continente"]=="Asia":
-                asia+=1
-            elif pais["continente"]=="Europa":
-                europa+=1
-            elif pais["continente"]=="Oceanía":
-                oceania+=1
-        print(f"La cantidad de paises que hay de África es: {africa} ")
-        print(f"La cantidad de paises que hay de Asia es: {asia} ")
-        print(f"La cantidad de paises que hay de América es: {america} ")
-        print(f"La cantidad de paises que hay de Europa es: {europa} ")
-        print(f"La cantidad de paises que hay de Oceanía es: {oceania} ")
+            #recorro los paises del archivo y cada vez que encuentre un continente le suma 1
+            if pais["continente"] in contador_continentes:
+                contador_continentes[pais["continente"]]+=1
+        print(f"Los pasises por continentes son: {contador_continentes}\n")

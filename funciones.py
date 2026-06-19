@@ -58,6 +58,23 @@ def estadistica_menu():
 "5. Salir"]
 ).ask()
     return opcion
+def menu_continentes():
+    opcion= questionary.select(
+        message="Selecciona el continente: ",
+        choices=["1. África",
+"2. América",
+"3. Asia",
+"4. Europa",
+"5. Oceanía"]
+    ).ask()
+    continentes = {
+    "1. África": "África",
+    "2. América": "América",
+    "3. Asia": "Asia",
+    "4. Europa": "Europa",
+    "5. Oceanía": "Oceanía"}
+    continente=continentes[opcion]
+    return continente
 
 #Limpiar la consola
 def limpiar_consola():
@@ -101,9 +118,9 @@ def agregar_pais():
         nombre=verificar_texto("Ingrese el nombre del país: ")
         poblacion=verificar_numero("Ingrese el valor de la población: ")
         superficie=verificar_numero("Ingrese el valor de la superficie: ")
-        continente=verificar_texto("Ingrese el continenete: ")
+        continente=menu_continentes()
         archivo.write(f"{nombre},{poblacion},{superficie},{continente}\n")
-        print("País agregado con éxito")
+        print("País agregado con éxito\n")
 
 def actualizar():
     opcion= questionary.select(
@@ -130,9 +147,9 @@ def actualizar():
                         escritor=csv.DictWriter(archivo,fieldnames=campos)
                         escritor.writeheader()
                         escritor.writerows(filas)
-                        print("Pais actualizado con éxito")
+                        print("Pais actualizado con éxito\n")
                 else:
-                    raise ValueError("El país ingresado no se encuentra en el registro")
+                    raise ValueError("El país ingresado no se encuentra en el registro\n")
             case "2. Actualizar superficie":
                 for linea in lector:
                     if normalizar(pais_buscado)==normalizar(linea["nombre"]):
@@ -145,9 +162,9 @@ def actualizar():
                         escritor=csv.DictWriter(archivo,fieldnames=campos)
                         escritor.writeheader()
                         escritor.writerows(filas)
-                        print("Pais actualizado con éxito")
+                        print("Pais actualizado con éxito\n")
                 else:
-                    raise ValueError("El país ingresado no se encuentra en el registro")
+                    raise ValueError("El país ingresado no se encuentra en el registro\n")
 
 
 def buscar_pais():
@@ -170,21 +187,7 @@ def buscar_pais():
             raise ValueError("El país ingresado no existe en el registro")
     
 def filtrar_pais_continente():
-    opcion= questionary.select(
-        message="Selecciona: ",
-        choices=["1. África",
-"2. América",
-"3. Asia",
-"4. Europa",
-"5. Oceanía"]
-    ).ask()
-    continentes = {
-    "1. África": "África",
-    "2. América": "América",
-    "3. Asia": "Asia",
-    "4. Europa": "Europa",
-    "5. Oceanía": "Oceanía"}
-    continente_elegido = continentes[opcion]
+    continente_elegido = menu_continentes()
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
         lector=csv.DictReader(archivo)
         encontrado=False
@@ -327,7 +330,7 @@ def pais_moyor_menor_pablacion():
         mayor_poblacion=max(paises,key=lambda pais:pais["nombre"])
         print(f"El país con mayor población es {mayor_poblacion["nombre"]}")
         menor_poblacion=min(paises,key=lambda pais:pais["nombre"])
-        print(f"El país con menor población es {menor_poblacion["nombre"]}")
+        print(f"El país con menor población es {menor_poblacion["nombre"]}\n")
 
 def promedio_poblacion():
     with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
@@ -337,4 +340,39 @@ def promedio_poblacion():
         for pais in paises:
             suma+=int(pais["poblacion"])
         promedio=suma/len(paises)
-        print(f"El promedio de la población es {promedio}")
+        print(f"El promedio de la población es {promedio}\n")
+
+def promedio_superficie():
+    with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        lector=csv.DictReader(archivo)
+        paises=list(lector)
+        suma=0
+        for pais in paises:
+            suma+=int(pais["superficie"])
+        promedio=suma/len(paises)
+        print(f"El promedio de la superficie es de {promedio} km²\n")
+
+def cantidad_por_continente():
+    with open("paises.csv","r",newline="",encoding="utf-8-sig") as archivo:
+        lector=csv.DictReader(archivo)
+        africa=0
+        america=0
+        asia=0
+        europa=0
+        oceania=0
+        for pais in lector:
+            if pais["continente"]=="África":
+                africa+=1
+            elif pais["continente"]=="América":
+                america+=1
+            elif pais["continente"]=="Asia":
+                asia+=1
+            elif pais["continente"]=="Europa":
+                europa+=1
+            elif pais["continente"]=="Oceanía":
+                oceania+=1
+        print(f"La cantidad de paises que hay de África es: {africa} ")
+        print(f"La cantidad de paises que hay de Asia es: {asia} ")
+        print(f"La cantidad de paises que hay de América es: {america} ")
+        print(f"La cantidad de paises que hay de Europa es: {europa} ")
+        print(f"La cantidad de paises que hay de Oceanía es: {oceania} ")

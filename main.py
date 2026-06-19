@@ -56,9 +56,9 @@ while True:
                         case "2. Promedio de población":
                             promedio_poblacion()
                         case "3. Promedio de superficie":
-                            pass
+                            promedio_superficie()
                         case "4. Cantidad de países por continente":
-                            pass
+                            cantidad_por_continente()
                         case "5. Salir":
                             print("Volviendo al menú principal")
                             break

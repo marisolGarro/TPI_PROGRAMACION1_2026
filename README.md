@@ -50,5 +50,8 @@ Control de rangos inválidos.
 Manejo de búsquedas sin resultados.
 Normalización de texto para búsquedas con o sin tildes.
 
+enlace del informe
+https://drive.google.com/file/d/1IJn08BZJB1MglFjs79-uKJ0KrD8vm5L3/view?usp=sharing
+
 #enlace de video
 https://drive.google.com/file/d/1T0MA6XEShjW9kmSSbYFiGLDXqH9IGN0M/view?usp=sharing
